@@ -91,6 +91,7 @@ var mapsNames = {
   'マサバ海峡大橋':     'Hammerhead Bridge',
   'キンメダイ美術館':   'Museum d\'Alfonsino',
   'マヒマヒリゾート＆スパ': 'Mahi-Mahi Resort',
+  'ショッツル鉱山':     'Piranha Pit',
 };
 
 function parseMaps(div) {
