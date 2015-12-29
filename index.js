@@ -12,7 +12,7 @@ var deepEqual = require('deep-equal'),
 var conf = require(process.argv[2] || './config.json');
 
 function pre(s) {
-  return 'https://' + conf.domain + conf.prefix;
+  return 'https://' + conf.domain + conf.prefix + s;
 }
 
 var cookieJar = new CookieJar(new FileCookieStore(conf.cookiePath));
