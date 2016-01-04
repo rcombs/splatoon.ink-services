@@ -168,9 +168,13 @@ function cacheSchedule(cb, next) {
         var startTime = new Date(year, parseInt(timeArr[1], 10) - 1, parseInt(timeArr[2], 10), parseInt(timeArr[3], 10), 0, 0);
         if (startTime.getTime() < Date.now() - 1000 * 60 * 60 * 72)
           startTime.setUTCFullYear(year + 1);
+        else if (startTime.getTime() > Date.now() + 1000 * 60 * 60 * 72)
+          startTime.setUTCFullYear(year - 1);
         var endTime = new Date(year, parseInt(timeArr[4], 10) - 1, parseInt(timeArr[5], 10), parseInt(timeArr[6], 10), 0, 0);
         if (endTime.getTime() < Date.now() - 1000 * 60 * 60 * 72)
           endTime.setUTCFullYear(year + 1);
+        else if (endTime.getTime() > Date.now() + 1000 * 60 * 60 * 72)
+          endTime.setUTCFullYear(year - 1);
 
         entry.startTime = startTime.getTime();
         entry.endTime = endTime.getTime();
