@@ -92,6 +92,7 @@ var mapsNames = {
   'キンメダイ美術館':   'Museum d\'Alfonsino',
   'マヒマヒリゾート＆スパ': 'Mahi-Mahi Resort',
   'ショッツル鉱山':     'Piranha Pit',
+  'アンチョビットゲームズ': 'Ancho-V Games',
 };
 
 function parseMaps(div) {
