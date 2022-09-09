@@ -265,9 +265,10 @@ function refreshServiceToken(cb, next, retry) {
 
   request({
     uri: 'https://api-lp1.znc.srv.nintendo.net/v1/Account/Login',
-    headers: {authorization: 'Bearer', '%3Aauthority': 'api-lp1.znc.srv.nintendo.net', 'x-platform': 'iOS', 'x-productversion': '1.0.4'},
+    headers: {authorization: 'Bearer', '%3Aauthority': 'api-lp1.znc.srv.nintendo.net', 'x-platform': 'iOS', 'x-productversion': '1.1.0'},
     json: true,
     body: {parameter: {
+      f: conf.f,
       language: "en-US",
       naBirthday: conf.naBirthday,
       naCountry: conf.naCountry,
@@ -332,6 +333,8 @@ function refreshGameWebToken(cb, next, retry) {
 }
 
 function refreshCookie(cb, next, retry) {
+  console.log('Splat2 cookie is stale; refreshing');
+
   if (gameWebToken.exp < Date.now() - 1000 * 30) {
     if (retry)
       return next('Recursion at refreshCookie');
@@ -364,7 +367,7 @@ function refreshStages2(cb, next) {
       var modeA = [];
       for (var i = 0; i < body[mode].length; i++) {
         var entry = body[mode][i];
-        var fEntry = {startTime: entry.start_time, endTime: entry.end_time, maps: [], rule: entry.rule};
+        var fEntry = {startTime: entry.start_time, endTime: entry.end_time, maps: [], rule: entry.rule, mode: entry.game_mode};
         if (entry.stage_a) fEntry.maps.push(entry.stage_a.name);
         if (entry.stage_b) fEntry.maps.push(entry.stage_b.name);
         if (entry.stage_c) fEntry.maps.push(entry.stage_c.name);
@@ -405,24 +408,23 @@ function refreshStages2(cb, next) {
 }
 
 function cacheSchedule2(cb, next) {
-  if (cachedSchedule2.updateTime > Date.now() - 1000 * 10 || (cachedSchedule2.schedule && cachedSchedule2.schedule[0] && cachedSchedule2.schedule[0].endTime * 1000 > Date.now() + 1000 * 60 * 2))
+  if (cachedSchedule2.updateTime > Date.now() - 1000 * 10 || (cachedSchedule2.modes && cachedSchedule2.modes.regular && cachedSchedule2.modes.regular[0] && cachedSchedule2.modes.regular[0].endTime * 1000 > Date.now() + 1000 * 60 * 2))
     return cb();
 
   console.log("Cache2 is possibly stale; refreshing...");
 
-  cookieStore.findCookie('app.splatoon2.nintendo.net', '/', 'iksm_session', function (err, cookie) {
+  cookieStore2.findCookie('app.splatoon2.nintendo.net', '/', 'iksm_session', function (err, cookie) {
     if (err)
       return next(err);
-    if (!cookie || cookie.expiryTime() < Date.now() - 1000 * 30)
+    if (!cookie || cookie.expiryTime() < Date.now() - 1000 * 30) {
       return refreshCookie(cb, next);
+    }
     return refreshStages2(cb, next);
   });
 }
 
 app.get('/schedule(.json)?', cors(), function (req, res, next) {
-  cacheSchedule(function () {
-    return res.send(cachedSchedule);
-  }, next);
+  return res.status(410).set('Cache-Control', 'max-age=31556926').send('Nintendo has shut down the Splatoon 1 API');
 });
 
 app.get('/schedule2(.json)?', cors(), function (req, res, next) {
